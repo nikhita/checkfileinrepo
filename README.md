@@ -27,7 +27,7 @@ $ go install
 
 Since Github enforces a rate limit on requests, you will need a personal API token. You can find more details about generating an API token [here](https://github.com/blog/1509-personal-api-tokens).
 
-The org and token are mandatory.
+The token, org and filename are mandatory.
 
 ```
 checkfileinrepo : v0.1.0

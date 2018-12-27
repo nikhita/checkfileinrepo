@@ -57,13 +57,15 @@ func init() {
 
 func main() {
 	args := flag.Args()
-
-	if len(args) != 1 {
-		fmt.Println("Wrong number of arguments!")
-		os.Exit(1)
+	if len(args) == 0 {
+		usageAndExit("No arguments specified. Please specify the filename.", 1)
+	}
+	if len(args) > 1 {
+		usageAndExit(fmt.Sprintf("Only one argument is allowed. %d arguments found.", len(args)), 1)
 	}
 
 	filename := args[0]
+
 	ctx := context.Background()
 
 	// Create an authenticated client.
