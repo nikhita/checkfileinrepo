@@ -51,7 +51,7 @@ func init() {
 	}
 
 	if org == "" {
-		usageAndExit("--orgs cannot be empty. Please specify at least one GitHub organization.", 1)
+		usageAndExit("--org cannot be empty.", 1)
 	}
 }
 
@@ -95,10 +95,10 @@ func getReposWithoutFile(ctx context.Context, client *github.Client, org, filena
 		os.Exit(1)
 	}
 
-	sleepIfRateLimitExceeded(ctx, client)
 	var reposWithoutFile []string
 
 	for _, repository := range repos {
+		sleepIfRateLimitExceeded(ctx, client)
 		repo := repository.GetName()
 		fmt.Printf("Checking %s...\n", repo)
 		_, _, _, err := client.Repositories.GetContents(ctx, org, repo, filename, &github.RepositoryContentGetOptions{Ref: "master"})
