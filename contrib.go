@@ -94,10 +94,10 @@ func getReposWithoutContribFile(ctx context.Context, client *github.Client, org 
 	for _, repository := range repos {
 		repo := repository.GetName()
 		fmt.Printf("Checking %s...\n", repo)
-		_, _, _, err := client.Repositories.GetContents(ctx, org, repo, "CONTRIBUTING.md", &github.RepositoryContentGetOptions{Ref: "master"})
+		_, _, _, err := client.Repositories.GetContents(ctx, org, repo, "LICENSE", &github.RepositoryContentGetOptions{Ref: "master"})
 
 		if err != nil && !strings.Contains(err.Error(), "404") {
-			fmt.Printf("getting CONTRIBUTING.md file failed: %v", err)
+			fmt.Printf("getting LICENSE file failed: %v", err)
 			os.Exit(1)
 		}
 
@@ -107,7 +107,7 @@ func getReposWithoutContribFile(ctx context.Context, client *github.Client, org 
 	}
 
 	if len(reposWithoutContribFile) != 0 {
-		fmt.Printf("\nThe following repos in the %s org do not have the CONTRIBUTING.md file:\n", org)
+		fmt.Printf("\nThe following repos in the %s org do not have the LICENSE file:\n", org)
 
 		for _, line := range reposWithoutContribFile {
 			fmt.Println(line)
@@ -115,7 +115,7 @@ func getReposWithoutContribFile(ctx context.Context, client *github.Client, org 
 		return
 	}
 
-	fmt.Printf("\nYay! All repos in the %s org have the CONTRIBUTING.md file.\n", org)
+	fmt.Printf("\nYay! All repos in the %s org have the LICENSE file.\n", org)
 }
 
 func sleepIfRateLimitExceeded(ctx context.Context, client *github.Client) {
