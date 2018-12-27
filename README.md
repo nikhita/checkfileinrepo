@@ -1,6 +1,6 @@
 # checkfileinrepo
 
-`checkfileinrepo` is a tool to check if a specified file exists across all repos in a GitHub organization.
+`checkfileinrepo` is a tool to check if a particular file exists across all repos in a GitHub organization.
 It will list all repos that do not have the file. Examples can be seen [here](examples.md).
 
 A usecase of this tool can be to check if all repos in your GitHub org have the `CONTRIBUTING.md` file,
