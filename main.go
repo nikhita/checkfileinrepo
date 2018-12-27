@@ -15,22 +15,23 @@ import (
 
 const (
 	// BANNER is what is printed for help/info output.
-	BANNER = "contribcheck : %s\n"
+	BANNER = "checkfileinrepo : %s\n"
 	// USAGE is an example of how the command should be used.
-	USAGE = "USAGE:\ncontribcheck -token=<your-token> <org>"
+	USAGE = "USAGE:\ncheckfileinrepo --token=<your-token> --org=<org-name> <filename>"
 	// VERSION is the binary version.
 	VERSION = "v0.1.0"
 )
 
 var (
-	token   string
-	version bool
+	token, org, filename string
+	version              bool
 )
 
 func init() {
-	flag.StringVar(&token, "token", "", "Mandatory GitHub API token")
+	flag.StringVar(&token, "token", "", "GitHub API token (mandatory)")
 	flag.BoolVar(&version, "version", false, "print version and exit")
 	flag.BoolVar(&version, "v", false, "print version and exit (shorthand)")
+	flag.StringVar(&org, "org", "", "Name of GitHub organization (mandatory)")
 
 	flag.Usage = func() {
 		fmt.Fprint(os.Stderr, fmt.Sprintf(BANNER, VERSION))
@@ -46,7 +47,11 @@ func init() {
 	}
 
 	if token == "" {
-		usageAndExit("GitHub token cannot be empty", 1)
+		usageAndExit("--token cannot be empty.", 1)
+	}
+
+	if org == "" {
+		usageAndExit("--orgs cannot be empty. Please specify at least one GitHub organization.", 1)
 	}
 }
 
@@ -58,7 +63,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	org := args[0]
+	filename := args[0]
 	ctx := context.Background()
 
 	// Create an authenticated client.
@@ -69,11 +74,11 @@ func main() {
 
 	client := github.NewClient(tc)
 
-	getReposWithoutContribFile(ctx, client, org)
+	getReposWithoutFile(ctx, client, org, filename)
 }
 
-// getAllRepos checks for the CONTRIBUTING.md file across all public repos in an org.
-func getReposWithoutContribFile(ctx context.Context, client *github.Client, org string) {
+// getReposWithoutFile checks for the specified file across all public repos in an org.
+func getReposWithoutFile(ctx context.Context, client *github.Client, org, filename string) {
 	fmt.Printf("Listing repos for the %s org...\n", org)
 	opt := &github.RepositoryListByOrgOptions{
 		Type: "public",
@@ -89,33 +94,33 @@ func getReposWithoutContribFile(ctx context.Context, client *github.Client, org 
 	}
 
 	sleepIfRateLimitExceeded(ctx, client)
-	var reposWithoutContribFile []string
+	var reposWithoutFile []string
 
 	for _, repository := range repos {
 		repo := repository.GetName()
 		fmt.Printf("Checking %s...\n", repo)
-		_, _, _, err := client.Repositories.GetContents(ctx, org, repo, "CONTRIBUTING.md", &github.RepositoryContentGetOptions{Ref: "master"})
+		_, _, _, err := client.Repositories.GetContents(ctx, org, repo, filename, &github.RepositoryContentGetOptions{Ref: "master"})
 
 		if err != nil && !strings.Contains(err.Error(), "404") {
-			fmt.Printf("getting CONTRIBUTING.md file failed: %v", err)
+			fmt.Printf("getting %s file failed: %v", filename, err)
 			os.Exit(1)
 		}
 
 		if err != nil && strings.Contains(err.Error(), "404") {
-			reposWithoutContribFile = append(reposWithoutContribFile, fmt.Sprintf("%s/%s", org, repo))
+			reposWithoutFile = append(reposWithoutFile, fmt.Sprintf("%s/%s", org, repo))
 		}
 	}
 
-	if len(reposWithoutContribFile) != 0 {
-		fmt.Printf("\nThe following repos in the %s org do not have the CONTRIBUTING.md file:\n", org)
+	if len(reposWithoutFile) != 0 {
+		fmt.Printf("\nThe following repos in the %s org do not have the %s file:\n", org, filename)
 
-		for _, line := range reposWithoutContribFile {
+		for _, line := range reposWithoutFile {
 			fmt.Println(line)
 		}
 		return
 	}
 
-	fmt.Printf("\nYay! All repos in the %s org have the CONTRIBUTING.md file.\n", org)
+	fmt.Printf("\nYay! All repos in the %s org have the %s file.\n", org, filename)
 }
 
 func sleepIfRateLimitExceeded(ctx context.Context, client *github.Client) {

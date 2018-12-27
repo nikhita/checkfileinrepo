@@ -1,25 +1,25 @@
-# contribcheck
+# checkfileinrepo
 
-`contribcheck` is a tool to check if the `CONTRIBUTING.md` file is present across all repos in a Github organization,
-to make sure that your GitHub org is [friendly to new contributors](https://blog.github.com/2012-09-17-contributing-guidelines/).
-It will list the repos that do not have this file. An example output can be seen [here](example-output.md).
+`checkfileinrepo` is a tool to check if a specified file exists across all repos in a GitHub organization.
+It will list all repos that do not have the file. Examples can be seen [here](examples.md)
+
+A usecase of this tool can be to check if all repos in your GitHub org have the `CONTRIBUTING.md` file,
+to make sure that your org is [friendly to new contributors](https://blog.github.com/2012-09-17-contributing-guidelines/).
 
 Beware: This is very quick and hacky! :)
 
 ## Installation
 
-**Prerequisites**: Go version 1.7 or greater.
-
 1. Get the code
 
 ```
-$ go get github.com/nikhita/contribcheck
+$ go get github.com/nikhita/checkfileinrepo
 ```
 
 2. Build
 
 ```
-$ cd $GOPATH/src/github.com/nikhita/contribcheck
+$ cd $GOPATH/src/github.com/nikhita/checkfileinrepo
 $ go install
 ```
 
@@ -30,17 +30,19 @@ Since Github enforces a rate limit on requests, you will need a personal API tok
 The org and token are mandatory.
 
 ```
-contribcheck : v0.1.0
+checkfileinrepo : v0.1.0
 USAGE:
-contribcheck -token=<your-token> <org>
+checkfileinrepo --token=<your-token> --org=<org-name> <filename>
+  -org string
+    	Name of GitHub organization (mandatory)
   -token string
-    	Mandatory GitHub API token
+    	GitHub API token (mandatory)
   -v	print version and exit (shorthand)
   -version
     	print version and exit
 ```
 
-An example on how to use it and a sample output can be see [here](example-output.md).
+Examples on how to use it along with sample outputs can be seen [here](examples.md).
 
 ## License
 

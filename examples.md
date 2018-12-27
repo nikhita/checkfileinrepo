@@ -3,7 +3,7 @@
 **Command**:
 
 ```
-contribcheck  -token=<your-token-here> kubernetes
+checkfileinrepo --token=<your-token-here> --org=kubernetes CONTRIBUTING.md
 ```
 
 **Output**:
@@ -88,7 +88,7 @@ kubernetes/cloud-provider-sample
 **Command**:
 
 ```
-contribcheck  -token=<your-token-here> kubernetes-client
+checkfileinrepo --token=<your-token-here> --org=kubernetes-client CONTRIBUTING.md
 ```
 
 **Output**:
